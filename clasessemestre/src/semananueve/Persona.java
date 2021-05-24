@@ -5,8 +5,8 @@ package semananueve;
  *
  */
 public class Persona implements Animal {
-	int edad = 0;
-	String nombre = null;
+	private int edad = 0;
+	private String nombre = null;
 
 	public Persona(String nombre, int edad) {
 		super();

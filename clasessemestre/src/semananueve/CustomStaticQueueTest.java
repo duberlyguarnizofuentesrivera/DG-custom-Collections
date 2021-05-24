@@ -33,7 +33,7 @@ class CustomStaticQueueTest {
 	@Test
 	void testConstructor() {
 		Assert.assertNotNull(csq);
-		assertEquals(4, csq.lenght());
+		assertEquals(4, csq.length());
 	}
 
 	@Test
@@ -67,6 +67,8 @@ class CustomStaticQueueTest {
 			assertEquals(per1, csq.sacar());
 			assertEquals(per2, csq.sacar());
 			assertEquals(per3, csq.consultar(0));
+			assertEquals(per3, csq.sacar());
+			Assert.assertNull(csq.sacar());
 		}
 
 	}
