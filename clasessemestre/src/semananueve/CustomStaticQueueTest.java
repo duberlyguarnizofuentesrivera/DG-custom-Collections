@@ -5,15 +5,29 @@ import static org.junit.jupiter.api.Assertions.*;
 import org.junit.Assert;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
+/**
+ * Clase y métodos de prueba para la cola estática personalizada
+ * (CustomStaticQueue). Eres libre de avisar si algún test
+ * adicional es requerido.
+ * @author Duberly Guarnizo Fuentes Rivera
+ *
+ */
 class CustomStaticQueueTest {
-	CustomStaticQueue<String> csq;
-	CustomStaticQueue<Integer> csq2;
+	CustomStaticQueue<Persona> csq;
+	Persona per1;
+	Persona per2;
+	Persona per3;
+	Persona per4;
+	Persona per5;
 
 	@BeforeEach
 	void prepararTest() {
-		csq = new CustomStaticQueue(String.class, 4);
-		csq2 = new CustomStaticQueue(Integer.class, 3);
+		csq = new CustomStaticQueue<>(Persona.class, 4);
+		per1 = new Persona("Juan", 20);
+		per2 = new Persona("Maria", 54);
+		per3 = new Persona("Juliana", 22);
+		per4 = new Persona("Juana la cubana", 36);
+		per5 = new Persona("Maria Antonieta De Las Nieves", 41);
 	}
 
 	@Test
@@ -25,15 +39,15 @@ class CustomStaticQueueTest {
 	@Test
 	void testAgregar() {
 		try {
-			csq.agregar("Hola");
-			csq.agregar("Mundo");
+			csq.agregar(per1);
+			csq.agregar(per2);
 		}
 		catch (Exception e) {
 			// pass
 		}
 		finally {
-			assertEquals("Hola", csq.consultar(0));
-			assertEquals("Mundo", csq.consultar(1));
+			assertEquals(per1, csq.consultar(0));
+			assertEquals(per2, csq.consultar(1));
 			Assert.assertNull(csq.consultar(2));
 		}
 
@@ -42,17 +56,36 @@ class CustomStaticQueueTest {
 	@Test
 	void testSacar() {
 		try {
-			csq2.agregar(4);
-			csq2.agregar(3);
-			csq2.agregar(2);
+			csq.agregar(per1);
+			csq.agregar(per2);
+			csq.agregar(per3);
 		}
 		catch (Exception e) {
 			e.printStackTrace();
 		}
 		finally {
-			assertEquals(4, csq2.sacar());
-			assertEquals(3, csq2.sacar());
-			assertEquals(2, csq2.consultar(0));
+			assertEquals(per1, csq.sacar());
+			assertEquals(per2, csq.sacar());
+			assertEquals(per3, csq.consultar(0));
+		}
+
+	}
+
+	@Test
+	void testMayoresDeCiertaEdad() {
+		try {
+			csq.agregar(per1);
+			csq.agregar(per2);
+			csq.agregar(per3);
+			csq.agregar(per4);
+		}
+		catch (CustomStaticQueueExeption e) {
+			System.out.println("Excepcion metodo agregar()!");
+		}
+		finally {
+			int[] listaMayores = csq.mayoresDeCiertaEdad(30);
+			assertEquals(1, listaMayores[0]);
+			assertEquals(3, listaMayores[1]);
 		}
 
 	}
@@ -60,11 +93,11 @@ class CustomStaticQueueTest {
 	@Test
 	void testAgregarCuandoNoHayMasEspacios() {
 		try {
-			csq.agregar("Uno");
-			csq.agregar("dos");
-			csq.agregar("tres");
-			csq.agregar("cuatro");
-			csq.agregar("cinco");
+			csq.agregar(per1);
+			csq.agregar(per2);
+			csq.agregar(per3);
+			csq.agregar(per4);
+			csq.agregar(per5);
 		}
 		catch (Exception e) {
 			assertTrue(e.getMessage().contains("Sin espacio en la cola"));

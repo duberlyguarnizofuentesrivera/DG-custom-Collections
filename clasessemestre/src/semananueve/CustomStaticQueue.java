@@ -1,21 +1,32 @@
 package semananueve;
 
 import java.lang.reflect.Array;
-
-public class CustomStaticQueue<T> {
+/**
+ * Clase que crea una cola estática (tamaño fijo), de sistema First Input - First Output
+ * Contiene métodos para agregar, consultar, filtrar y remover elementos de la cola.
+ * @author Duberly Guarnizo Fuentes Rivera
+ *
+ * @param <T>: Tipo de dato genérico, que implementa la interfaz <b>Animal</b>
+ */
+public class CustomStaticQueue<T extends Animal> {
 	// creamos una variable del tipo genérico e indicamos que contendrá un array
 	private T[] elementos;
 	private int lenght = 0;
-	private int elementos_en_cola = 0;
+	private int elementosEnCola = 0;
 
-	// Aquí nos hacemos un poco los listos...
-	// Java no permite asignar arrays con elementos genéricos, es decir
-	// elementos = T[tamaño], ya que no compila (la razón de esto es bien
-	// interesante pero también larga.
-	// Para empezar, al constructor no solo le pasamos el tamaño del array (size)
-	// sino también la "clase" del tipo de datos que usará. Todos los objeto tienen
-	// el atributo "class", que guarda una referencia a la clase, o molde que lo
-	// creó.
+
+	/**
+	 * Java no permite asignar arrays con elementos genéricos, es decir
+	 * elementos = T[tamaño], ya que no compila (la razón de esto es bien
+	 * interesante pero también larga.
+	 * Para empezar, al constructor no solo le pasamos el tamaño del array (size)
+	 * sino también la "clase" del tipo de datos que usará. Todos los objeto tienen
+	 * el atributo "class", que guarda una referencia a la clase, o molde que lo
+	 * creó.
+	 * @param cls: la clase del tipo de objeto que usaremos. Ejemplo: <b>String.class</b>
+	 * @param size: el tamaño de la cola, numero entero positivo
+	 */
+	@SuppressWarnings("unchecked")
 	public CustomStaticQueue(Class<T> cls, int size) {
 		// Entonces, una vez teniendo la clase del objeto, y el tamaño, usamos el método
 		// newInstance (nueva instancia) que crea una nueva instancia de una clase. En
@@ -29,56 +40,116 @@ public class CustomStaticQueue<T> {
 		elementos = (T[]) Array.newInstance(cls, size);
 		this.lenght = size;
 	}
-
+/**
+ * Devuelve la dimensión del array interno, es decir, el numero de elementos
+ * que contiene la cola. Se determina en el constructor.
+ * @return tamaño de la cola
+ */
 	public int lenght() {
 		return this.lenght;
 	}
-
+/**
+ * 
+ * @param index: índice (iniciando de cero) del elemento a consultar. Solo devuelve el dato
+ *               más no lo elimina ni hace cambios en la cola
+ * @return Objeto genérico ubicado en el índice indicado.
+ */
 	public T consultar(int index) {
 		return this.elementos[index];
 	}
 
-	public void agregar(T element) throws Exception {
+	/**
+	 * Agrega un elemento (Que implemente la interfaz <b>Animal</b>) a la cola, al final de la misma
+	 * @param element: el objeto genérico que  implementa <b>Animal</b> a ser agregado
+	 * @throws CustomStaticQueueExeption: Cuando no existe espacio en la cola.
+	 */
+	public void agregar(T element) throws CustomStaticQueueExeption {
 		// Agregamos nuevos elementos. El nuevo elemento siempre se agrega al final
-		if (elementos_en_cola == lenght) {
+		if (elementosEnCola == lenght) {
 			// la cola está llena
-			throw new Exception("Sin espacio en la cola: hay " + this.elementos_en_cola + " de " + this.lenght
-					+ " espacios utilizados");
+			throw new CustomStaticQueueExeption("Sin espacio en la cola: hay " + this.elementosEnCola + " de "
+					+ this.lenght + " espacios utilizados");
 		}
 		else {
-			if (elementos_en_cola == 0) {
+			if (elementosEnCola == 0) {
 				// no existen aún elementos en la cola
 				elementos[0] = element;
 			}
 			else {
 				// existe al menos un elemento en la cola
-				elementos[elementos_en_cola] = element;
+				elementos[elementosEnCola] = element;
 			}
-			elementos_en_cola++;
+			elementosEnCola++;
 		}
 
 	}
-
+/**
+ * Devuelve el primer elemento en la cola, quitándolo permanentemente de la misma.
+ * Equivale al método <b>pop()</b> de las listas.
+ * @return Objeto genérico ubicado al inicio de la cola.
+ */
 	public T sacar() {
 		T resultado = null;
-		if(elementos[0]==null) {
-			//no hay elementos
+		if (elementos[0] == null) {
+			// no hay elementos
 			return resultado;
-		}else {
-			//hay elementos
-			resultado=elementos[0];
+		}
+		else {
+			// hay elementos
+			resultado = elementos[0];
 			T[] auxiliar = elementos;
-			for (int i = 0; i < elementos_en_cola-1; i++) {
-				elementos[i]=auxiliar[i+1];
+			for (int i = 0; i < elementosEnCola - 1; i++) {
+				elementos[i] = auxiliar[i + 1];
 			}
-			elementos_en_cola--;
+			elementosEnCola--;
 			return resultado;
 		}
 	}
+/**
+ * Muestra en la consola el contenido de la cola.
+ * Para propósitos de debug, únicamente.
+ */
 	public void listarElementos() {
 		System.out.println("Listado de elementos en " + elementos);
-		for (int i=0; i<elementos_en_cola; i++) {
-			System.out.println("--> "+elementos[i]);
+		for (int i = 0; i < elementosEnCola; i++) {
+			System.out.println("--> " + elementos[i]);
 		}
+	}
+/**
+ * Método exclusivo para los objetos que implementan la interfaz <b>Animal</b>
+ * Genera y retorna un <b>int array</b> que contiene los indices de los
+ * objetos cuyo método <b>getEdad()</b>  cumple con la regla de ser menores que el parámetro.
+ * @param edad: edad utilizada para filtrar la cola
+ * @return int[], lista con los indices de los objetos filtrados
+ */
+	public int[] mayoresDeCiertaEdad(int edad) {
+		int[] resultado;
+		int contadorCoincidencias = 0;
+		for (T dato : elementos) {
+			if (dato.getEdad() >= edad) {
+				contadorCoincidencias++;
+			}
+		}
+		resultado = new int[contadorCoincidencias];
+		contadorCoincidencias = 0;
+		for (int i = 0; i < elementosEnCola; i++) {
+			if (elementos[i].getEdad() >= edad) {
+				resultado[contadorCoincidencias++] = i;
+			}
+		}
+		return resultado;
+	}
+
+}
+/**
+ * Personalización de excepción para este trabajo
+ * @author Duberly Guarnizo Fuentes Rivera
+ *
+ */
+class CustomStaticQueueExeption extends Exception {
+	private static final long serialVersionUID = -4071353461008976083L;
+
+	public CustomStaticQueueExeption(String message) {
+		super(message);
 	}
 }
